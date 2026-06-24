@@ -37,7 +37,7 @@ function GetDeClip(clip c, int Width1, string knl, float b_p, float c_p, int t_w
     rotated = descaled.TurnLeft()
     
     # 3. Double only the horizontal axis of the original clip via NNEDI
-    upscaled_rotated = rotated.nnedi3(field=0, dh=true, nsize=0, nns=4, qual=1, etype=1, pscrn=2) #nndi 0 is 8x4
+    upscaled_rotated = rotated.nnedi3(field=0, dh=true, nsize=4, nns=4, qual=1, etype=1, pscrn=2) #nsize 4 is 8x4, best for this small res
     
     # 4. Rotate back to normal orientation. Current dimensions: (Width1 * 2) x 480.
     restored = upscaled_rotated.TurnRight()
