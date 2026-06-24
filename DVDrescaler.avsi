@@ -5,7 +5,7 @@ function DVDdescale(clip c, int "start_w", int "end_w", string "kernel", float "
     e_w = default(end_w, 641)
     knl = default(kernel, "bilinear")
     
-    # Explicitly fallback to 1280x480 if not specified, ignoring any upscale further up the script chain
+    # Fallback to 768 if not specified
     t_w = default(target_w, 768)
     t_h = default(target_h, 480)
     
@@ -28,7 +28,7 @@ function DVDdescale(clip c, int "start_w", int "end_w", string "kernel", float "
 # Internal helper function
 function GetDeClip(clip c, int Width1, string knl, float b_p, float c_p, int t_w, int t_h) {
     
-    # 1. Descale ONLY the width to Width1. Height is strictly forced to 480.
+    # 1. Descale only the width to Width1. Height is strictly forced to 480.
     descaled = (knl == "bicubic")  ? c.DeBicubicResizeMT(Width1, 480, b=b_p, c=c_p) :
     \          (knl == "bilinear") ? c.DeBilinearResizeMT(Width1, 480) :
     \                                c.DeBilinearResizeMT(Width1, 480)
@@ -36,12 +36,12 @@ function GetDeClip(clip c, int Width1, string knl, float b_p, float c_p, int t_w
     # 2. Rotate 90 degrees. 
     rotated = descaled.TurnLeft()
     
-    # 3. Double only the horizontal axis of the original clip via NNEDI
+    # 3. Double only the horizontal axis of the original clip via NNEDI.
     upscaled_rotated = rotated.nnedi3(field=0, dh=true, nsize=4, nns=4, qual=1, etype=1, pscrn=2) #nsize 4 is 8x4, best for this small res
     
     # 4. Rotate back to normal orientation. Current dimensions: (Width1 * 2) x 480.
     restored = upscaled_rotated.TurnRight()
     
-    # 5. Fix NNEDI 0.5-pixel horizontal field shift and map strictly to target width.
+    # 5. Fix NNEDI 0.5-pixel horizontal field shift and map to target width.
     return restored.Spline64Resize(t_w, 480, src_left=-0.5, src_top=0, src_width=restored.Width(), src_height=480) #adjust field order "shift", target 1280x480 by default.
 }	
