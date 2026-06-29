@@ -5,8 +5,8 @@ function DVDdescale(clip c, int "start_w", int "end_w", string "kernel", float "
     e_w = default(end_w, 641)
     knl = default(kernel, "bilinear")
     
-    # Fallback to 768 if not specified
-    t_w = default(target_w, 768)
+    # Fallback to 720 if not specified
+    t_w = default(target_w, 720)
     t_h = default(target_h, 480)
     
     # Bicubic parameters
@@ -43,5 +43,5 @@ function GetDeClip(clip c, int Width1, string knl, float b_p, float c_p, int t_w
     restored = upscaled_rotated.TurnRight()
     
     # 5. Fix NNEDI 0.5-pixel horizontal field shift and map to target width.
-    return restored.Spline64Resize(t_w, 480, src_left=-0.5, src_top=0, src_width=restored.Width(), src_height=480) #adjust field order "shift", target 1280x480 by default.
+    return restored.Spline64Resize(t_w, 480, src_left=-0.5, src_top=0, src_width=restored.Width(), src_height=480) #adjust field order "shift"
 }	
